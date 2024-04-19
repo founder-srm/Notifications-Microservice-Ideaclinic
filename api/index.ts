@@ -1,10 +1,16 @@
 const express = require("express");
 const { Novu } = require("@novu/node");
+const cors = require('cors');
 require('dotenv').config({ path: '.env.local' });
 
 const novu = new Novu(process.env.NOVU_API_KEY);
 const app = express();
 app.use(express.json());
+app.use(cors({
+    origin: ['http://localhost:3000', 'https://ideaclinic-forum.vercel.app'],
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 
 app.post("/create-thread", async (req, res) => {
@@ -13,7 +19,6 @@ app.post("/create-thread", async (req, res) => {
     if (!threadId || !userId || !title) {
         return res.status(400).send({ error: 'Missing required fields' });
     }
-
     try {
         await novu.topics.create({
             key: threadId,
