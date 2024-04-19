@@ -3,6 +3,8 @@ const { Novu } = require("@novu/node");
 const cors = require('cors');
 require('dotenv').config({ path: '.env.local' });
 
+import { TriggerRecipientsTypeEnum } from '@novu/node'
+
 const novu = new Novu(process.env.NOVU_API_KEY);
 const app = express();
 app.use(express.json());
@@ -28,6 +30,26 @@ app.post("/create-thread", async (req, res) => {
             subscribers: [userId],
         });
 
+        res.status(201).send({ message: 'Thread created successfully' });
+    } catch (error) {
+        res.status(500).send({ error: `An error occurred while creating the thread: ${error}` });
+    }
+});
+
+app.post("/on-comment", async (req, res) => {
+    const { threadId, commentData } = req.body;
+
+    if (!threadId || !commentData ) {
+        return res.status(400).send({ error: 'Missing required fields' });
+    }
+    try {
+        await novu.trigger("replies-to-post", {
+            to: [{ type: TriggerRecipientsTypeEnum.TOPIC, topicKey: threadId }],
+            payload: {
+              post_id: threadId,
+              comment:commentData,
+            }
+        });
         res.status(201).send({ message: 'Thread created successfully' });
     } catch (error) {
         res.status(500).send({ error: `An error occurred while creating the thread: ${error}` });
