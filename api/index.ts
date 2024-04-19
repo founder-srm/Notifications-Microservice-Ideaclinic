@@ -30,7 +30,7 @@ app.post("/create-thread", async (req, res) => {
             subscribers: [userId],
         });
 
-        res.status(201).send({ message: 'Thread created successfully' });
+        res.status(201).send({ message: 'Notification sent successfully' });
     } catch (error) {
         res.status(500).send({ error: `An error occurred while creating the thread: ${error}` });
     }
