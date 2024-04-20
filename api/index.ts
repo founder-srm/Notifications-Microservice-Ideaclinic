@@ -50,9 +50,28 @@ app.post("/on-comment", async (req, res) => {
               comment:commentData,
             }
         });
-        res.status(201).send({ message: 'Thread created successfully' });
+        res.status(201).send({ message: 'Comment created successfully' });
     } catch (error) {
-        res.status(500).send({ error: `An error occurred while creating the thread: ${error}` });
+        res.status(500).send({ error: `An error occurred while creating the Comment: ${error}` });
+    }
+});
+
+app.post("/register-notification", async (req, res) => {
+    const { id, email, firstName, lastName, title } = req.body;
+
+    if (!id || !email || !firstName || !lastName || !title) {
+        return res.status(400).send({ error: 'Missing required fields' });
+    }
+    try{
+        await novu.subscribers.identify(id, { 
+            email: email, 
+            firstName: firstName, 
+            lastName: lastName, 
+            data: { 'title' : title }
+        });
+        res.status(201).send({ message: 'Account created successfully' });
+    } catch (error) {
+        res.status(500).send({ error: `An error occurred while creating the Account: ${error}` });
     }
 });
 
